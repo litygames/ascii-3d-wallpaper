@@ -1,0 +1,35 @@
+{
+  "name": "ascii-3d-wallpaper",
+  "version": "1.0.0",
+  "description": "3D model ASCII wallpaper for Lively Wallpaper — Three.js + Vite",
+  "author": "litygames",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/litygames/ascii-3d-wallpaper.git"
+  },
+  "homepage": "https://github.com/litygames/ascii-3d-wallpaper#readme",
+  "bugs": {
+    "url": "https://github.com/litygames/ascii-3d-wallpaper/issues"
+  },
+  "keywords": ["lively-wallpaper", "wallpaper", "threejs", "ascii", "ascii-art", "vite", "webgl"],
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "zip": "node scripts/zip.mjs",
+    "zip:win": "powershell -NoProfile -Command \"Compress-Archive -Path dist/* -DestinationPath dist/ascii-3d-wallpaper.zip -Force\"",
+    "package": "npm run build && npm run zip"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "three": "^0.185.1"
+  }
+}

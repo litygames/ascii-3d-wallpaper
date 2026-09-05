@@ -1,0 +1,55 @@
+{
+  "rotationSpeed": {
+    "text": "Rotation speed",
+    "type": "slider",
+    "value": 1.5,
+    "min": 0,
+    "max": 5,
+    "step": 0.1,
+    "tick": 0.1
+  },
+  "asciiResolution": {
+    "text": "ASCII detail",
+    "type": "slider",
+    "value": 0.2,
+    "min": 0.1,
+    "max": 0.25,
+    "step": 0.01,
+    "tick": 0.05
+  },
+  "textColor": {
+    "text": "Text color",
+    "type": "color",
+    "value": "#39FF88"
+  },
+  "enableAscii": {
+    "text": "ASCII effect",
+    "type": "checkbox",
+    "value": true
+  },
+  "lightIntensity": {
+    "text": "Brightness",
+    "type": "slider",
+    "value": 1.8,
+    "min": 0.5,
+    "max": 3,
+    "step": 0.1,
+    "tick": 0.5
+  },
+  "modelScale": {
+    "text": "Model scale",
+    "type": "slider",
+    "value": 1,
+    "min": 0.5,
+    "max": 3,
+    "step": 0.1,
+    "tick": 0.5
+  },
+  "modelSelect": {
+    "text": "3D model",
+    "type": "folderDropdown",
+    "value": "default.glb",
+    "filter": "*.glb",
+    "folder": "models"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "Title": "ASCII 3D Wallpaper",
+  "Type": "web",
+  "FileName": "index.html",
+  "Author": "litygames",
+  "Desc": "3D ASCII model wallpaper with configurable rotation, lighting and native Lively pause (0% CPU)",
+  "Version": 1,
+  "IsAbsolutePath": false,
+  "Arguments": "--pause-event true",
+  "Thumbnail": "preview.jpg",
+  "Preview": "preview.gif",
+  "License": "MIT",
+  "Contact": "https://github.com/litygames/ascii-3d-wallpaper"
+}
