@@ -7,7 +7,8 @@ THREE.Cache.enabled = true;
 
 const canvas = document.getElementById("canvas");
 
-let backgroundColor = "#0D110F";
+let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+let textColor = getComputedStyle(document.documentElement).getPropertyValue("--text").trim();
 
 // ── Scene / Camera / Renderer ─────────────────────────────────────
 const scene = new THREE.Scene();
@@ -27,15 +28,14 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000, 1);
-document.documentElement.style.backgroundColor = backgroundColor;
-document.body.style.backgroundColor = backgroundColor;
+document.documentElement.style.setProperty("--bg", backgroundColor);
+document.documentElement.style.setProperty("--text", textColor);
 renderer.shadowMap.enabled = false;
 renderer.sortObjects = false;
 
 // ── AsciiEffect ────────────────────────────────────────────────────
 let asciiResolution = 0.2;
 const asciiCharset = " .,-~:;=!*#$@";
-let textColor = "#39FF88";
 let asciiEnabled = true;
 
 function createAsciiEffect(resolution, colorHex) {
@@ -49,12 +49,10 @@ function createAsciiEffect(resolution, colorHex) {
     strResolution: "medium",
   });
   eff.setSize(window.innerWidth, window.innerHeight);
-  eff.domElement.style.backgroundColor = backgroundColor;
-  eff.domElement.style.color = colorHex || textColor;
-  const td = eff.domElement.querySelector("td");
-  if (td) td.style.color = colorHex || textColor;
-  const els = eff.domElement.querySelectorAll("table, td");
-  for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = backgroundColor;
+  if (colorHex && colorHex !== textColor) {
+    textColor = colorHex;
+    document.documentElement.style.setProperty("--text", textColor);
+  }
   return eff;
 }
 
@@ -262,12 +260,6 @@ function applyAsciiResolution(newRes) {
     document.body.appendChild(effect.domElement);
     scene.background = new THREE.Color(0x000000);
     renderer.setClearColor(0x000000, 1);
-    effect.domElement.style.backgroundColor = backgroundColor;
-    effect.domElement.style.color = textColor;
-    const els = effect.domElement.querySelectorAll("table, td");
-    for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = backgroundColor;
-    const td = effect.domElement.querySelector("td");
-    if (td) td.style.color = textColor;
     if (!isPaused && model) effect.render(scene, camera);
   }, 50);
 }
@@ -276,23 +268,14 @@ function applyTextColor(val) {
   const hex = normalizeColor(val);
   if (!hex) return;
   textColor = hex;
-  if (!asciiEnabled || !effect) return;
-  effect.domElement.style.color = hex;
-  const td = effect.domElement.querySelector("td");
-  if (td) td.style.color = hex;
+  document.documentElement.style.setProperty("--text", hex);
 }
 
 function applyBackgroundColor(val) {
   const hex = normalizeColor(val);
   if (!hex) return;
   backgroundColor = hex;
-  document.documentElement.style.backgroundColor = hex;
-  document.body.style.backgroundColor = hex;
-  if (effect?.domElement) {
-    effect.domElement.style.backgroundColor = hex;
-    const els = effect.domElement.querySelectorAll("table, td");
-    for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = hex;
-  }
+  document.documentElement.style.setProperty("--bg", hex);
   if (!asciiEnabled) {
     scene.background = new THREE.Color(hex);
     renderer.setClearColor(hex, 1);
