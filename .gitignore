@@ -23,5 +23,8 @@ coverage/
 npm-debug.log*
 pnpm-debug.log*
 
+# ── Agent instructions ──────────────────
+AGENTS.md
+
 # ── Lively local cache (if any) ──────────────────
 # Lively copies wallpapers to %APPDATA%\Lively Wallpaper\ — never commit

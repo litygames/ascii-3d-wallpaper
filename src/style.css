@@ -9,7 +9,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #000;
+  background: #0D110F;
 }
 
 canvas {
@@ -21,7 +21,7 @@ body > div {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #000;
+  background: #0D110F;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +40,7 @@ body > div table td {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-touch-callout: none;
-  background: #000;
+  background: #0D110F;
   color: inherit;
   text-align: center;
 }

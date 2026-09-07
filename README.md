@@ -82,6 +82,7 @@ npm run package
 * **Build tool:** [Vite](https://vitejs.dev/)
 * **Wallpaper host:** [Lively Wallpaper](https://github.com/rocksdanister/lively) by [rocksdanister](https://github.com/rocksdanister/lively)
 * **ASCII effect:** Based on `AsciiEffect` from Three.js
+* **Default model:** `default.glb` — torus by [litygames](https://github.com/litygames) (Blender) — MIT
 
 ## License
 

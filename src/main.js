@@ -7,6 +7,8 @@ THREE.Cache.enabled = true;
 
 const canvas = document.getElementById("canvas");
 
+let backgroundColor = "#0D110F";
+
 // ── Scene / Camera / Renderer ─────────────────────────────────────
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
@@ -25,6 +27,8 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000, 1);
+document.documentElement.style.backgroundColor = backgroundColor;
+document.body.style.backgroundColor = backgroundColor;
 renderer.shadowMap.enabled = false;
 renderer.sortObjects = false;
 
@@ -45,8 +49,12 @@ function createAsciiEffect(resolution, colorHex) {
     strResolution: "medium",
   });
   eff.setSize(window.innerWidth, window.innerHeight);
-  eff.domElement.style.backgroundColor = "#000000";
+  eff.domElement.style.backgroundColor = backgroundColor;
   eff.domElement.style.color = colorHex || textColor;
+  const td = eff.domElement.querySelector("td");
+  if (td) td.style.color = colorHex || textColor;
+  const els = eff.domElement.querySelectorAll("table, td");
+  for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = backgroundColor;
   return eff;
 }
 
@@ -61,10 +69,14 @@ function setAsciiEnabled(enabled) {
     if (effect.domElement.parentNode) effect.domElement.remove();
     effect = createAsciiEffect(asciiResolution, textColor);
     document.body.appendChild(effect.domElement);
+    scene.background = new THREE.Color(0x000000);
+    renderer.setClearColor(0x000000, 1);
   } else {
     if (effect.domElement.parentNode) effect.domElement.remove();
     canvas.style.display = "block";
     renderer.setSize(window.innerWidth, window.innerHeight);
+    scene.background = new THREE.Color(backgroundColor);
+    renderer.setClearColor(backgroundColor, 1);
   }
 }
 
@@ -248,6 +260,15 @@ function applyAsciiResolution(newRes) {
     effect.domElement.remove();
     effect = createAsciiEffect(asciiResolution, c);
     document.body.appendChild(effect.domElement);
+    scene.background = new THREE.Color(0x000000);
+    renderer.setClearColor(0x000000, 1);
+    effect.domElement.style.backgroundColor = backgroundColor;
+    effect.domElement.style.color = textColor;
+    const els = effect.domElement.querySelectorAll("table, td");
+    for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = backgroundColor;
+    const td = effect.domElement.querySelector("td");
+    if (td) td.style.color = textColor;
+    if (!isPaused && model) effect.render(scene, camera);
   }, 50);
 }
 
@@ -261,6 +282,26 @@ function applyTextColor(val) {
   if (td) td.style.color = hex;
 }
 
+function applyBackgroundColor(val) {
+  const hex = normalizeColor(val);
+  if (!hex) return;
+  backgroundColor = hex;
+  document.documentElement.style.backgroundColor = hex;
+  document.body.style.backgroundColor = hex;
+  if (effect?.domElement) {
+    effect.domElement.style.backgroundColor = hex;
+    const els = effect.domElement.querySelectorAll("table, td");
+    for (let i = 0; i < els.length; i++) els[i].style.backgroundColor = hex;
+  }
+  if (!asciiEnabled) {
+    scene.background = new THREE.Color(hex);
+    renderer.setClearColor(hex, 1);
+  } else {
+    scene.background = new THREE.Color(0x000000);
+    renderer.setClearColor(0x000000, 1);
+  }
+}
+
 // ── Lively hooks ───────────────────────────────────────────────────
 window.livelyPropertyListener = (name, val) => {
   if (name === "rotationSpeed" || name === "Speed") {
@@ -270,6 +311,7 @@ window.livelyPropertyListener = (name, val) => {
   }
   if (name === "asciiResolution") { applyAsciiResolution(val); return; }
   if (name === "textColor" || name === "asciiColor" || name === "fontColor") { applyTextColor(val); return; }
+  if (name === "backgroundColor") { applyBackgroundColor(val); return; }
   if (name === "enableAscii") {
     const isFalse = val === false || val === 0 || val === "false" || val === "0";
     const enabled = val === true || val === 1 || val === "true" || val === "1";
