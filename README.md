@@ -38,7 +38,7 @@ Right-click the wallpaper → **Customise**.
 | Control        |     Range |       Default |
 | -------------- | --------: | ------------: |
 | Rotation speed |       0–5 |         `1.5` |
-| ASCII detail   |  0.1–0.25 |         `0.2` |
+| ASCII detail   |  0.1–0.25 |        `0.12` |
 | Text color     | Any color |     `#39FF88` |
 | ASCII effect   |    On/Off |        `true` |
 | Brightness     |     0.5–3 |         `1.8` |

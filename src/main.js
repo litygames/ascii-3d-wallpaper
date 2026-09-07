@@ -34,7 +34,7 @@ renderer.shadowMap.enabled = false;
 renderer.sortObjects = false;
 
 // ── AsciiEffect ────────────────────────────────────────────────────
-let asciiResolution = 0.2;
+let asciiResolution = 0.12;
 const asciiCharset = " .,-~:;=!*#$@";
 let asciiEnabled = true;
 
