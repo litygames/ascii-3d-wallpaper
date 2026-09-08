@@ -1,15 +1,12 @@
 /**
  * lively.js — Lively Wallpaper integration
- * Preserves exact behavior from src/main.js:
- *  - window.livelyPropertyListener dispatch with aliases
- *  - isLively detection (chrome.webview || userAgent lively || file:)
- *  - livelyWallpaperPlaybackChanged / livelyWallpaperPause / Play
- *  - visibilitychange + blur/focus guards (isLively)
- *  - normalizeColor via utils/color, clamp via config ranges
+ * Handles LivelyProperties.json dispatch and pause bridge.
+ * No large if/else chain for animations — delegates to animation registry.
  */
 import * as THREE from "three";
 import { normalizeColor } from "./utils/color.js";
-import { LIGHTS } from "./config.js";
+import { LIGHTS, SPEED, ANIMATION } from "./config.js";
+import { normalizeAnimation } from "./animation.js";
 
 export function createLivelyController({
   asciiController,
@@ -18,6 +15,16 @@ export function createLivelyController({
   renderer,
   ambientLight,
   directionalLight,
+  // new animation API
+  getSpeed,
+  setSpeed,
+  getAnimation,
+  setAnimation,
+  getInvertRotation,
+  setInvertRotation,
+  getDisableAnimation,
+  setDisableAnimation,
+  // legacy alias (kept for old installs with rotationSpeed)
   getRotationSpeed,
   setRotationSpeed,
   getBackgroundColor,
@@ -26,7 +33,10 @@ export function createLivelyController({
   setTextColor,
   setPaused,
 }) {
-  // ── Color helpers (preserve main.js logic, now via utils) ────────
+  // Fallback to legacy if new API not provided (during transition)
+  const _getSpeed = getSpeed || getRotationSpeed;
+  const _setSpeed = setSpeed || setRotationSpeed;
+
   function applyTextColor(val) {
     const hex = normalizeColor(val);
     if (!hex) return;
@@ -54,13 +64,77 @@ export function createLivelyController({
     directionalLight.intensity = c * LIGHTS.ratio;
   }
 
-  // ── Property dispatch (preserve aliases) ─────────────────────────
+  function applySpeed(val) {
+    const n = Number(val);
+    if (Number.isNaN(n)) return;
+    const clamped = n < SPEED.min ? SPEED.min : n > SPEED.max ? SPEED.max : n;
+    _setSpeed(clamped);
+  }
+
+  function isTruthy(val) {
+    return val === true || val === 1 || val === "true" || val === "1";
+  }
+
+  function isFalsy(val) {
+    return val === false || val === 0 || val === "false" || val === "0";
+  }
+
+  // Scalable dispatch: animation registry handles new animations without if/else growth
   window.livelyPropertyListener = (name, val) => {
-    if (name === "rotationSpeed" || name === "Speed") {
-      const n = Number(val);
-      if (!Number.isNaN(n)) setRotationSpeed(n * 0.01);
+    // Speed (renamed from rotationSpeed, same 0-5)
+    if (name === "speed") {
+      applySpeed(val);
       return;
     }
+    if (name === "rotationSpeed" || name === "Speed") {
+      const n = Number(val);
+      if (Number.isNaN(n)) return;
+      // rotationSpeed was 0-5 (same as speed), Speed was 1-100 — normalize both to 0-5
+      if (name === "Speed" && n > 5) {
+        applySpeed(n / 20); // 100 -> 5, 50 -> 2.5
+        return;
+      }
+      // rotationSpeed/Speed alias: detect rad (0.015) vs speed (1.5) by magnitude
+      if (n < 0.1 && n !== 0) {
+        // Likely old rad value (n*0.01) — convert back to speed
+        applySpeed(n * 100);
+      } else {
+        applySpeed(n);
+      }
+      return;
+    }
+
+    // Animation dropdown: Lively sends index 0..5, dev may send string key
+    if (name === "animation" || name === "Animation") {
+      const key = normalizeAnimation(val);
+      if (setAnimation) setAnimation(key);
+      // If disable is active, value is stored but ignored by animation controller (early-return)
+      return;
+    }
+
+    if (name === "invertRotation" || name === "Invert rotation" || name === "invert") {
+      if (isFalsy(val)) {
+        if (setInvertRotation) setInvertRotation(false);
+        else if (setDisableAnimation) setDisableAnimation(false);
+      } else {
+        const enabled = isTruthy(val);
+        if (setInvertRotation) setInvertRotation(enabled);
+      }
+      return;
+    }
+
+    if (name === "disableAnimation" || name === "Disable animation" || name === "disable") {
+      if (isFalsy(val)) {
+        if (setDisableAnimation) setDisableAnimation(false);
+      } else {
+        const disabled = isTruthy(val);
+        if (setDisableAnimation) setDisableAnimation(disabled);
+        // Note: Lively does not expose API to visually disable controls dynamically.
+        // We store the value and animationController will ignore animation/invert while disabled.
+      }
+      return;
+    }
+
     if (name === "asciiResolution") {
       asciiController.applyResolution(val);
       return;
@@ -74,8 +148,8 @@ export function createLivelyController({
       return;
     }
     if (name === "enableAscii") {
-      const isFalse = val === false || val === 0 || val === "false" || val === "0";
-      const enabled = val === true || val === 1 || val === "true" || val === "1";
+      const isFalse = isFalsy(val);
+      const enabled = isTruthy(val);
       asciiController.setEnabled(isFalse ? false : enabled);
       return;
     }
@@ -101,7 +175,7 @@ export function createLivelyController({
     }
   };
 
-  // ── isLively + pause bridge ──────────────────────────────────────
+  // ── isLively + pause bridge (0% CPU) ─────────────────────────────
   let isLively =
     typeof window !== "undefined" &&
     (!!window.chrome?.webview ||
@@ -133,9 +207,9 @@ export function createLivelyController({
 
   return {
     getIsLively: () => isLively,
-    // expose for tests
     applyTextColor,
     applyBackgroundColor,
     applyLightIntensity,
+    applySpeed,
   };
 }

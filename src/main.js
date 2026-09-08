@@ -3,6 +3,8 @@ import { createScene } from "./scene.js";
 import { createAsciiController } from "./ascii.js";
 import { createModelController } from "./model.js";
 import { createLivelyController } from "./lively.js";
+import { createAnimationController } from "./animation.js";
+import { SPEED, ANIMATION } from "./config.js";
 
 const canvas = document.getElementById("canvas");
 
@@ -13,8 +15,14 @@ const { scene, camera, renderer, pivot, ambientLight, directionalLight } = creat
 document.documentElement.style.setProperty("--bg", backgroundColor);
 document.documentElement.style.setProperty("--text", textColor);
 
+// ── Animation state (lively-controlled) ──────────────────────────
+// speed renamed from rotationSpeed, same 0-5 range, controls all animations
+let speed = SPEED.default; // Lively value 0-5 (not rad)
+let animation = ANIMATION.default; // continuous (X+Y) — donut classic, visible in dev
+let invertRotation = false;
+let disableAnimation = false;
+
 // ── Loop / Pause (hoisted before ascii for safe getter) ───────────
-let rotationSpeed = 0.015;
 let isPaused = false;
 let rafId = null;
 let lastFrameTime = 0;
@@ -50,6 +58,15 @@ const asciiController = createAsciiController({
   getModel: () => modelController.getModel(),
 });
 
+const animationController = createAnimationController({
+  pivot,
+  modelController,
+  getSpeed: () => speed,
+  getInvert: () => invertRotation,
+  getDisabled: () => disableAnimation,
+  getAnimation: () => animation,
+});
+
 modelController.load(`${import.meta.env.BASE_URL}models/default.glb`);
 
 // ── Lively (controller) ────────────────────────────────────────────
@@ -60,8 +77,22 @@ const livelyController = createLivelyController({
   renderer,
   ambientLight,
   directionalLight,
-  getRotationSpeed: () => rotationSpeed,
-  setRotationSpeed: (v) => { rotationSpeed = v; },
+  getSpeed: () => speed,
+  setSpeed: (v) => { speed = v; },
+  getAnimation: () => animation,
+  setAnimation: (v) => { animation = v; },
+  getInvertRotation: () => invertRotation,
+  setInvertRotation: (v) => { invertRotation = v; },
+  getDisableAnimation: () => disableAnimation,
+  setDisableAnimation: (v) => { disableAnimation = v; },
+  // legacy aliases (rotationSpeed/Speed) — keep working for old installs
+  getRotationSpeed: () => speed,
+  setRotationSpeed: (v) => {
+    const n = Number(v);
+    if (Number.isNaN(n)) return;
+    // v may be rad (0.015) from old lively or speed (1.5) from new — detect by magnitude
+    speed = n < 0.1 ? n * 100 : n;
+  },
   getBackgroundColor: () => backgroundColor,
   setBackgroundColor: (hex) => {
     backgroundColor = hex;
@@ -84,7 +115,7 @@ function animate(now) {
   if (now - lastFrameTime < FRAME_INTERVAL) return;
   lastFrameTime = now;
 
-  pivot.rotation.y += rotationSpeed * 2;
+  animationController.update(now);
 
   if (asciiController.isEnabled()) asciiController.render();
   else renderer.render(scene, camera);

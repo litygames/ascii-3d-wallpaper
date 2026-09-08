@@ -5,7 +5,7 @@
  *  - Camera 75deg, 0.1/1000, pos (0,0,2.5), lookAt(0,0,0)
  *  - Renderer antialias:false, low-power, stencil:false, alpha:false,
  *    pixelRatio 1, shadowMap false, sortObjects false
- *  - Lights: Ambient 1.2 + Directional 1.5 @ (2,3,2), ratio 1.25
+ *  - Lights: Ambient 2.5 + Directional 3.75 @ (2,3,2), ratio 1.5 (full charset at max 5.0)
  *  - Pivot Group at (0,0,0)
  *  - Scene background 0x000000 (ascii active) — DOM --bg/--text handled outside
  */
@@ -40,10 +40,10 @@ export function createScene(canvas) {
   renderer.shadowMap.enabled = RENDERER.shadowMapEnabled;
   renderer.sortObjects = RENDERER.sortObjects;
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, LIGHTS.ambient);
+  const ambientLight = new THREE.AmbientLight(0xffffff, LIGHTS.intensity.default);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, LIGHTS.directional);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, LIGHTS.intensity.default * LIGHTS.ratio);
   directionalLight.position.set(...LIGHTS.position);
   scene.add(directionalLight);
 
