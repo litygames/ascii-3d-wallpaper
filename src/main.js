@@ -4,7 +4,7 @@ import { createAsciiController } from "./ascii.js";
 import { createModelController } from "./model.js";
 import { createLivelyController } from "./lively.js";
 import { createAnimationController } from "./animation.js";
-import { SPEED, ANIMATION } from "./config.js";
+import { SPEED, ANIMATION, LOOP, RESIZE_DEBOUNCE } from "./config.js";
 
 const canvas = document.getElementById("canvas");
 
@@ -26,7 +26,7 @@ let disableAnimation = false;
 let isPaused = false;
 let rafId = null;
 let lastFrameTime = 0;
-const FRAME_INTERVAL = 1000 / 30;
+const FRAME_INTERVAL = LOOP.interval;
 
 function setPaused(paused) {
   if (paused === isPaused) return;
@@ -133,5 +133,5 @@ window.addEventListener("resize", () => {
     camera.lookAt(0, 0, 0);
     if (asciiController.isEnabled()) asciiController.setSize(window.innerWidth, window.innerHeight);
     else renderer.setSize(window.innerWidth, window.innerHeight);
-  }, 100);
+  }, RESIZE_DEBOUNCE);
 });

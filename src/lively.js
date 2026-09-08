@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import { normalizeColor } from "./utils/color.js";
-import { LIGHTS, SPEED, ANIMATION } from "./config.js";
+import { LIGHTS, SPEED, COLORS } from "./config.js";
 import { normalizeAnimation } from "./animation.js";
 
 export function createLivelyController({
@@ -51,8 +51,8 @@ export function createLivelyController({
       scene.background = new THREE.Color(hex);
       renderer.setClearColor(hex, 1);
     } else {
-      scene.background = new THREE.Color(0x000000);
-      renderer.setClearColor(0x000000, 1);
+      scene.background = new THREE.Color(COLORS.sceneAscii);
+      renderer.setClearColor(COLORS.sceneAscii, 1);
     }
   }
 
