@@ -49,16 +49,16 @@ export const ASCII = {
 };
 
 // ── Lights ─────────────────────────────────────────────────────────
-// Natural mapping: 0.5 → " .", 2.5 → "#", 5.0 → "@" (full charset)
+// Natural mapping: 0.5 → " .", 3.2 → "#", 5.0 → "@" (full charset)
 export const LIGHTS = {
-  ambient: 2.5,
-  directional: 3.75, // intensity.default * ratio
+  ambient: 3.2,
+  directional: 4.8, // intensity.default * ratio
   position: [2, 3, 2],
   ratio: 1.5,
   intensity: {
     min: 0.5,
     max: 5,
-    default: 2.5,
+    default: 3.2,
   },
 };
 

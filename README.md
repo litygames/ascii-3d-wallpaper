@@ -8,7 +8,7 @@
 
 * **ASCII rendering** — 3D models rendered as ASCII characters
 * **Custom GLB models** — load your own `.glb` files
-* **Live customization** — rotation, detail, color, brightness, scale, and model selection
+* **Live customization** — animation, speed, detail, color, brightness, scale, and model selection
 * **Lively integration** — supports pause/resume events
 * **Lightweight** — ~154 KB gzipped
 
@@ -35,15 +35,19 @@ Then add the `dist/` folder to Lively.
 
 Right-click the wallpaper → **Customise**.
 
-| Control        |     Range |       Default |
-| -------------- | --------: | ------------: |
-| Rotation speed |       0–5 |         `1.5` |
-| ASCII detail   |  0.1–0.25 |        `0.12` |
-| Text color     | Any color |     `#39FF88` |
-| ASCII effect   |    On/Off |        `true` |
-| Brightness     |     0.5–3 |         `1.8` |
-| Model scale    |     0.5–3 |           `1` |
-| 3D Model       |    `.glb` | `default.glb` |
+| Control           |     Range |                       Default |
+| ----------------- | --------: | ----------------------------: |
+| 3D Model          |    `.glb` |                 `default.glb` |
+| Model scale       |     0.5–3 |                           `1` |
+| Speed             |       0–5 |                         `1.5` |
+| Animation         |  Dropdown | `Continuous rotation (X+Y)` |
+| Invert rotation   |    On/Off |                       `false` |
+| Disable animation |    On/Off |                       `false` |
+| ASCII detail      |  0.1–0.25 |                        `0.14` |
+| ASCII effect      |    On/Off |                        `true` |
+| Text color        | Any color |                     `#39FF88` |
+| Background color  | Any color |                     `#0D110F` |
+| Brightness        |     0.5–5 |                         `3.2` |
 
 ## Custom Models
 
