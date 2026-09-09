@@ -7,6 +7,8 @@
 class AsciiEffect {
   constructor(renderer, charSet = " .:-=+*#%@", options = {}) {
     const fResolution = options["resolution"] || 0.15;
+    const rawStretch = options["stretch"] != null ? Number(options["stretch"]) : 1;
+    const fStretch = Number.isFinite(rawStretch) && rawStretch > 0 ? rawStretch : 1;
     const iScale = options["scale"] || 1;
     const bColor = options["color"] || false;
     const bAlpha = options["alpha"] || false;
@@ -123,7 +125,7 @@ class AsciiEffect {
     const transparentChar = bInvert ? brightnessMap[255] : brightnessMap[255];
 
     function initAsciiSize() {
-      iWidth = Math.floor(width * fResolution);
+      iWidth = Math.floor(width * fResolution * fStretch);
       iHeight = Math.floor(height * fResolution);
       oCanvas.width = iWidth;
       oCanvas.height = iHeight;

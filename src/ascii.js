@@ -23,14 +23,16 @@ export function createAsciiController({
   getModel,
 }) {
   let asciiResolution = ASCII.resolution;
+  let asciiStretch = ASCII.stretch;
   const asciiCharset = ASCII.charset;
   let asciiEnabled = true;
   let pendingTimer = null;
 
-  function createAsciiEffect(resolution, colorHex) {
+  function createAsciiEffect(resolution, stretch, colorHex) {
     const eff = new AsciiEffect(renderer, asciiCharset, {
       invert: ASCII.invert,
       resolution,
+      stretch,
       scale: ASCII.scale,
       color: ASCII.color,
       block: ASCII.block,
@@ -45,7 +47,7 @@ export function createAsciiController({
     return eff;
   }
 
-  let effect = createAsciiEffect(asciiResolution, getTextColor());
+  let effect = createAsciiEffect(asciiResolution, asciiStretch, getTextColor());
   canvas.style.display = "none";
   document.body.appendChild(effect.domElement);
 
@@ -56,7 +58,7 @@ export function createAsciiController({
     if (asciiEnabled) {
       canvas.style.display = "none";
       if (effect.domElement.parentNode) effect.domElement.remove();
-      effect = createAsciiEffect(asciiResolution, getTextColor());
+      effect = createAsciiEffect(asciiResolution, asciiStretch, getTextColor());
       document.body.appendChild(effect.domElement);
       scene.background = new THREE.Color(COLORS.sceneAscii);
       renderer.setClearColor(COLORS.sceneAscii, 1);
@@ -81,7 +83,27 @@ export function createAsciiController({
       if (!asciiEnabled) return;
       const c = getTextColor();
       effect.domElement.remove();
-      effect = createAsciiEffect(asciiResolution, c);
+      effect = createAsciiEffect(asciiResolution, asciiStretch, c);
+      document.body.appendChild(effect.domElement);
+      scene.background = new THREE.Color(COLORS.sceneAscii);
+      renderer.setClearColor(COLORS.sceneAscii, 1);
+      if (!getIsPaused() && getModel()) effect.render(scene, camera);
+    }, ASCII.debounce);
+  }
+
+  function applyStretch(newStretch) {
+    const s = Number(newStretch);
+    if (Number.isNaN(s)) return;
+    const clamped =
+      s < ASCII.stretchMin ? ASCII.stretchMin : s > ASCII.stretchMax ? ASCII.stretchMax : s;
+    if (clamped === asciiStretch) return;
+    asciiStretch = clamped;
+    clearTimeout(pendingTimer);
+    pendingTimer = setTimeout(() => {
+      if (!asciiEnabled) return;
+      const c = getTextColor();
+      effect.domElement.remove();
+      effect = createAsciiEffect(asciiResolution, asciiStretch, c);
       document.body.appendChild(effect.domElement);
       scene.background = new THREE.Color(COLORS.sceneAscii);
       renderer.setClearColor(COLORS.sceneAscii, 1);
@@ -109,12 +131,18 @@ export function createAsciiController({
     return asciiResolution;
   }
 
+  function getStretch() {
+    return asciiStretch;
+  }
+
   return {
     getEffect,
     isEnabled,
     getResolution,
+    getStretch,
     setEnabled,
     applyResolution,
+    applyStretch,
     setSize,
     render,
     // expose for tests / debugging if needed

@@ -51,6 +51,13 @@ export const ASCII = {
   block: false,
   alpha: false,
   strResolution: "medium",
+  // Horizontal stretch correction: <1 compresses width (fixes horizontal stretch), >1 widens
+  // 0.9 empirically matches model size (theoretical 0.83 = 1/(2*0.6) for Consolas)
+  stretch: 0.9,
+  stretchMin: 0.5,
+  stretchMax: 1.5,
+  stretchStep: 0.05,
+  stretchTick: 0.25,
 };
 
 // ── Lights ─────────────────────────────────────────────────────────
