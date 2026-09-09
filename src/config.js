@@ -2,8 +2,11 @@
  * config.js — Centralized constants for ascii-3d-wallpaper
  * Single source of truth for values that appear in both
  * LivelyProperties.json and src/main.js (and related modules).
- * Preserves exact current behavior — do NOT change values without
- * updating LivelyProperties.json and verifying Lively integration.
+ * The canonical source for Lively defaults — run `npm run sync`
+ * to propagate changes to public/LivelyProperties.json (or it runs
+ * automatically on `npm run dev` / `npm run build` via pre hooks).
+ * Do NOT edit public/LivelyProperties.json value/min/max/step/tick/items
+ * manually — edit here and sync.
  */
 
 // ── Camera ─────────────────────────────────────────────────────────
@@ -39,6 +42,8 @@ export const ASCII = {
   resolution: 0.14,
   min: 0.1,
   max: 0.25,
+  step: 0.01,
+  tick: 0.05,
   debounce: 50,
   invert: true,
   scale: 1,
@@ -59,6 +64,8 @@ export const LIGHTS = {
     min: 0.5,
     max: 5,
     default: 3.2,
+    step: 0.1,
+    tick: 0.5,
   },
 };
 
@@ -68,6 +75,8 @@ export const MODEL = {
     min: 0.5,
     max: 3,
     default: 1,
+    step: 0.1,
+    tick: 0.5,
   },
   baseFit: 2, // baseScale = 2 / maxDim (auto-fit ~2 units)
   defaultUrl: "models/default.glb",
@@ -75,10 +84,13 @@ export const MODEL = {
 
 // ── Speed ──────────────────────────────────────────────────────────
 // Renamed from ROTATION (kept alias for compat). Controls all animations.
+// min 0.1 — never reaches 0, Disable checkbox is the single off-switch
 export const SPEED = {
-  min: 0,
+  min: 0.1,
   max: 5,
-  default: 1.5, // LivelyProperties.json value 0-5
+  default: 1.5, // LivelyProperties.json value 0.1-5
+  step: 0.1,
+  tick: 0.1,
   defaultRad: 0.015, // 1.5 * 0.01
   factor: 2, // legacy Y rotation: pivot.rotation.y += speed * 2
   map: (v) => v * 0.01,
@@ -93,7 +105,7 @@ export const ANIMATION = {
   // Ordered as in LivelyProperties.json dropdown items
   keys: ["continuous", "floating", "wobble", "breathing", "yRotation", "xRotation"],
   labels: [
-    "Continuous rotation (X+Y)",
+    "Continuous rotation",
     "Floating",
     "Wobble",
     "Breathing",

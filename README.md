@@ -39,7 +39,7 @@ Right-click the wallpaper → **Customise**.
 | ----------------- | --------: | ----------------------------: |
 | 3D Model          |    `.glb` |                 `default.glb` |
 | Model scale       |     0.5–3 |                           `1` |
-| Speed             |       0–5 |                         `1.5` |
+| Speed             |     0.1–5 |                         `1.5` |
 | Animation         |  Dropdown | `Continuous rotation (X+Y)` |
 | Invert rotation   |    On/Off |                       `false` |
 | Disable animation |    On/Off |                       `false` |
@@ -66,11 +66,15 @@ Only `.glb` models are supported.
 ## Development
 
 ```bash
-npm run dev
-npm run build
+npm run dev         # auto-syncs src/config.js → public/LivelyProperties.json
+npm run build       # auto-syncs before build
 npm run preview
-npm run package
+npm run package     # build + zip
+npm run sync        # manual sync (config → LivelyProperties.json)
+npm run sync:check  # CI: fail if out of sync
 ```
+
+> `src/config.js` is the single source of truth for slider defaults (`value/min/max/step/tick`) and colors. `public/LivelyProperties.json` keeps only `text/type/filter/folder` — numeric values are generated via `scripts/sync-lively.mjs`.
 
 ## Tech Stack
 

@@ -19,6 +19,12 @@
     "node": ">=18"
   },
   "scripts": {
+    "sync": "node scripts/sync-lively.mjs",
+    "sync:check": "node scripts/sync-lively.mjs --check",
+    "predev": "npm run sync",
+    "prebuild": "npm run sync",
+    "prezip": "npm run sync",
+    "prepackage": "npm run sync",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
