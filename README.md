@@ -4,13 +4,15 @@
 
 [![Try it online](https://img.shields.io/badge/Try%20it%20online-39FF88?style=flat-square)](https://litygames.github.io/ascii-3d-wallpaper/)
 
+> **Preview note:** The web preview may look different from the wallpaper when the browser window is smaller. For the closest preview to Lively Wallpaper, open the page in fullscreen (`F11`), as ASCII detail scales with the viewport size.
+
 ## Features
 
 - **ASCII rendering** — 3D models rendered as ASCII characters
 - **Custom GLB models** — load your own `.glb` files
 - **Live customization** — animation, speed, detail, color, brightness, scale, and model selection
 - **Lively integration** — supports pause/resume events
-- **Lightweight** — ~154 KB gzipped
+- **Lightweight** — ~157 KB gzipped
 
 ## Installation
 
@@ -46,7 +48,7 @@ Right-click the wallpaper → **Customise**.
 | ASCII effect      |    On/Off |                        `true` |
 | Text color        | Any color |                     `#39FF88` |
 | Background color  | Any color |                     `#0D110F` |
-| Brightness        |     0.5–5 |                         `3.2` |
+| Brightness        |     0.5–5 |                         `1.0` |
 
 > **Performance tip:** `ASCII detail` is the only performance-sensitive setting. Keep ≤ `0.18` on low-end GPUs. The default `0.14` provides a good balance between detail and performance.
 
