@@ -74,7 +74,7 @@
   "lightIntensity": {
     "text": "Brightness",
     "type": "slider",
-    "value": 3.2,
+    "value": 1,
     "min": 0.5,
     "max": 5,
     "step": 0.1,

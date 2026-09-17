@@ -61,16 +61,16 @@ export const ASCII = {
 };
 
 // ── Lights ─────────────────────────────────────────────────────────
-// Natural mapping: 0.5 → " .", 3.2 → "#", 5.0 → "@" (full charset)
+// Base natural (ACESFilmicToneMapping exposure 1.0, metalness 0 roughness 0.7): 1.0→ sombra "."  1.5→ "@" progresivo sin sobreexposición
 export const LIGHTS = {
-  ambient: 3.2,
-  directional: 4.8, // intensity.default * ratio
+  ambient: 1.0,
+  directional: 1.5, // intensity.default * ratio
   position: [2, 3, 2],
   ratio: 1.5,
   intensity: {
     min: 0.5,
     max: 5,
-    default: 3.2,
+    default: 1.0,
     step: 0.1,
     tick: 0.5,
   },
