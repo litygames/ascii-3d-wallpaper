@@ -37,6 +37,8 @@ export function createScene(canvas) {
   renderer.setPixelRatio(RENDERER.pixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(COLORS.sceneAscii, 1);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = RENDERER.shadowMapEnabled;
   renderer.sortObjects = RENDERER.sortObjects;
 

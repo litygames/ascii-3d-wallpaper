@@ -70,6 +70,22 @@ export function createModelController({ scene, pivot, camera }) {
   function setupModel(gltfScene) {
     model = gltfScene;
 
+    // Fix PBR default (GLTFLoader fallback metalness=1/roughness=1 sans envMap → sombra 0,0,0 confundida con fondo).
+    // Con metalness 0, ambient 3.2 sí aporta diffuse → sombra nunca negro puro → "." visible (fondo sigue 0x000000 → " ").
+    model.traverse((obj) => {
+      if (obj.isMesh && obj.material) {
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        for (let i = 0; i < mats.length; i++) {
+          const m = mats[i];
+          if (m.isMeshStandardMaterial) {
+            m.metalness = 0.0;
+            m.roughness = 0.7;
+            m.needsUpdate = true;
+          }
+        }
+      }
+    });
+
     tmpBox.setFromObject(model);
     tmpBox.getCenter(tmpCenter);
     model.position.sub(tmpCenter);

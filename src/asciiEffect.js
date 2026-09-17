@@ -114,15 +114,24 @@ class AsciiEffect {
     }
 
     // Lookup: luminance 0..255 -> char, precomputed to avoid Math.round/div per pixel
+    // Model range measured with ACESFilmicToneMapping (metalness 0 roughness 0.7, 3.2/4.8): p5=227 p95=244
+    // Remap: 227→"." ( darkest visible )  244→"@" ( brightest ), fondo 0,0,0→" " via spaceChar
     const maxIdx = aCharList.length - 1;
     const brightnessMap = new Array(256);
+    const modelBrightnessMap = new Array(256);
+    const lumMin = 227, lumMax = 244, lumRange = lumMax - lumMin;
     for (let i = 0; i < 256; i++) {
       // bInvert=true: high brightness -> dense char; else inverted
       const idx = bInvert ? Math.round((i / 255) * maxIdx) : Math.round((1 - i / 255) * maxIdx);
       brightnessMap[i] = aCharList[idx];
+      // p5/p95 remap: clamp((lum-227)/17) → 1..maxIdx (".".. "@"), preserves invert branch
+      const norm = i <= lumMin ? 0 : i >= lumMax ? 1 : (i - lumMin) / lumRange;
+      const modelIdx = bInvert ? 1 + Math.round(norm * (maxIdx - 1)) : 1 + Math.round((1 - norm) * (maxIdx - 1));
+      modelBrightnessMap[i] = aCharList[modelIdx];
     }
-    // Char for alpha 0 (transparent background -> max brightness)
-    const transparentChar = bInvert ? brightnessMap[255] : brightnessMap[255];
+    // Space exclusively for background (0,0,0); transparent also → space
+    const spaceChar = aCharList[0]; // "&nbsp;"
+    const transparentChar = spaceChar;
 
     function initAsciiSize() {
       iWidth = Math.floor(width * fResolution * fStretch);
@@ -173,15 +182,17 @@ class AsciiEffect {
         const rowOff = y * w * 4;
         for (let x = 0; x < w; x++) {
           const o = rowOff + x * 4;
+          const r = data[o];
+          const g = data[o + 1];
+          const b = data[o + 2];
           const a = data[o + 3];
-          let lum;
-          if (a === 0) {
-            parts.push(transparentChar);
+          if (a === 0 || (r === 0 && g === 0 && b === 0)) {
+            parts.push(spaceChar);
             continue;
           }
           // BT.601 luma: 0.3R+0.59G+0.11B — |0 avoids extra /255 division via lookup
-          lum = (0.3 * data[o] + 0.59 * data[o + 1] + 0.11 * data[o + 2]) | 0;
-          parts.push(brightnessMap[lum]);
+          const lum = (0.3 * r + 0.59 * g + 0.11 * b) | 0;
+          parts.push(modelBrightnessMap[lum]);
         }
         parts.push("<br/>");
       }
@@ -205,12 +216,12 @@ class AsciiEffect {
           const a = data[o + 3];
           let lum;
           let ch;
-          if (a === 0) {
-            ch = transparentChar;
-            lum = 255;
+          if (a === 0 || (r === 0 && g === 0 && b === 0)) {
+            ch = spaceChar;
+            lum = 0;
           } else {
             lum = (0.3 * r + 0.59 * g + 0.11 * b) | 0;
-            ch = brightnessMap[lum];
+            ch = modelBrightnessMap[lum];
           }
           parts.push(
             "<span style='color:rgb(" + r + "," + g + "," + b + ");" +
