@@ -10,7 +10,10 @@
  *  - speed: Lively value 0-5 (mapped via SPEED.map, 0 = frozen)
  *  - invert: boolean (reverses direction)
  *
- * Continuous (X+Y) is the classic ASCII donut — default in dev and Lively.
+ * Continuous is the classic ASCII donut tumble (donut.c by Andy Sloane):
+ * two-axis rotation X (fast) + Z (slow) at exact 2:1 ratio with Euler
+ * order ZXY so the composite matrix is R = Rz·Rx — same composition as
+ * the original A/B angles. Default in dev and Lively.
  */
 import { ANIMATION, SPEED } from "./config.js";
 
@@ -25,12 +28,13 @@ export const ANIMATION_KEYS = {
 
 // Pure registry: key -> strategy function
 const registry = {
-  // Classic donut: Y + X continuous rotation at slightly different rates
+  // Classic donut.c tumble: X (fast, "A") + Z (slow, "B") at 2:1, Euler ZXY
+  // => R = Rz(B)·Rx(A), identical composition to Andy Sloane's original A/B angles
   [ANIMATION_KEYS.CONTINUOUS]: ({ pivot, speed, invert }) => {
     const s = SPEED.map(speed) * (invert ? -1 : 1);
-    const { yFactor, xFactor } = ANIMATION.params.continuous;
-    pivot.rotation.y += s * yFactor;
+    const { xFactor, zFactor } = ANIMATION.params.continuous;
     pivot.rotation.x += s * xFactor;
+    pivot.rotation.z += s * zFactor;
   },
 
   // Legacy Y rotation (right) — identical to original main.js behavior
@@ -146,6 +150,9 @@ export function createAnimationController({
     const key = normalizeAnimation(raw);
     if (key !== prevKey) {
       resetPose();
+      // Per-animation Euler order (continuous needs ZXY for donut composition;
+      // all others keep three.js default XYZ so their look is unchanged)
+      pivot.rotation.order = ANIMATION.params[key]?.eulerOrder || "XYZ";
       prevKey = key;
     }
 

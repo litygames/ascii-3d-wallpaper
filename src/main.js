@@ -18,7 +18,7 @@ document.documentElement.style.setProperty("--text", textColor);
 // ── Animation state (lively-controlled) ──────────────────────────
 // speed renamed from rotationSpeed, same 0-5 range, controls all animations
 let speed = SPEED.default; // Lively value 0-5 (not rad)
-let animation = ANIMATION.default; // continuous (X+Y) — donut classic, visible in dev
+let animation = ANIMATION.default; // continuous (X+Z donut tumble) — classic donut.c, visible in dev
 let invertRotation = false;
 let disableAnimation = false;
 

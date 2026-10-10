@@ -131,7 +131,10 @@ export const ANIMATION = {
   },
   // Tunable params per animation (professional defaults, easy to extend)
   params: {
-    continuous: { yFactor: 2, xFactor: 1.2 }, // donut classic: Y faster than X
+    // Donut.c (a1k0n): A += 0.04 (X, fast), B += 0.02 (Z, slow) — ratio exact 2:1.
+    // Factors calibrate SPEED.map(SPEED.default)=0.015 rad/frame → 0.04/0.02 rad/frame
+    // at default speed 1.5 (30 FPS throttle). eulerOrder ZXY → R = Rz·Rx = donut composition.
+    continuous: { xFactor: 0.04 / 0.015, zFactor: 0.02 / 0.015, eulerOrder: "ZXY" },
     yRotation: { factor: 2 }, // right, same as legacy
     xRotation: { factor: 2 }, // up
     floating: { amplitude: 0.18, frequency: 0.0012 },
