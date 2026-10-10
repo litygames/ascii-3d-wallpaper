@@ -33,7 +33,7 @@
     "package": "npm run build && npm run zip"
   },
   "devDependencies": {
-    "vite": "^8.2.2"
+    "vite": "^8.3.3"
   },
   "dependencies": {
     "three": "^0.185.1"
